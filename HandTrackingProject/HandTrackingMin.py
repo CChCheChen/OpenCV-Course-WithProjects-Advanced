@@ -2,39 +2,44 @@ import cv2 as cv
 import mediapipe as mp
 import time
 
-cap = cv.VideoCapture(1)
+capture = cv.VideoCapture(0)
 
 mpHands = mp.solutions.hands
-hands = mpHands.Hands()
+hands = mpHands.Hands() #modify the parameter if needed
 mpDraw = mp.solutions.drawing_utils
 
+# For FPS display
 pTime = 0
 cTime = 0
 
 while True:
-    success, img = cap.read()
-    imgRGB = cv.cvtColor(img, cv.COLOR_BGR2RGB)
-    results = hands.process(imgRGB)
-    # print(results.multi_hand_landmarks)
+    success, img = capture.read()
+    if success:
+        imgRGB = cv.cvtColor(img, cv.COLOR_BGR2RGB) # hands object only uses RGB images
+        results = hands.process(imgRGB)
+        # print(results.multi_hand_landmarks)
 
-    if results.multi_hand_landmarks:
-        for handLms in results.multi_hand_landmarks:
-            for id, lm in enumerate(handLms.landmark):
-                # print(id, lm)
-                h, w, c = img.shape
-                cx, cy = int(lm.x * w), int(lm.y * h)
-                print(id, cx, cy)
-                # if id == 4:
-                cv.circle(img, (cx, cy), 15, (255, 0, 255), cv.FILLED)
+        if results.multi_hand_landmarks:
+            for handLMS in results.multi_hand_landmarks:
+                for id, lm in enumerate(handLMS.landmark):
+                    # print(id, lm)
+                    h, w, c = img.shape
+                    cx, cy = int(lm.x*w), int(lm.y*h) # position of center
+                    # print(id, cx, cy)
+                    cv.circle(img, (cx, cy), 15, (255, 0, 255), cv.FILLED)
+                mpDraw.draw_landmarks(img, handLMS, mpHands.HAND_CONNECTIONS)
 
-            mpDraw.draw_landmarks(img, handLms, mpHands.HAND_CONNECTIONS)
+        cTime = time.time()
+        fps = 1/(cTime - pTime)
+        pTime = cTime
+        cv.putText(img, str(int(fps)), (10, 70), cv.FONT_HERSHEY_PLAIN, 3, (255, 0, 255), 2)
 
-    cTime = time.time()
-    fps = 1 / (cTime - pTime)
-    pTime = cTime
+        cv.imshow("Result", img)
 
-    cv.putText(img, str(int(fps)), (10, 70), cv.FONT_HERSHEY_PLAIN, 3,
-                (255, 0, 255), 3)
+        if cv.waitKey(1) & 0xFF == ord('q'):
+            break
+    else:
+        break
 
-    cv.imshow("Image", img)
-    cv.waitKey(1)
+capture.release()
+cv.destroyAllWindows()
