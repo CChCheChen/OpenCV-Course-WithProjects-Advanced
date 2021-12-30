@@ -68,7 +68,7 @@ while True:
             img[0:h, 0:w] = overLayList[totalOpenFingers - 1]
 
             cv.rectangle(img, (20, 225), (170, 425), (0, 255, 0), cv.FILLED)
-            cv.putText(img, str(totalOpenFingers), (45, 375), cv.FONT_HERSHEY_PLAIN,10, (255, 0, 0), 25)
+            cv.putText(img, str(totalOpenFingers), (45, 375), cv.FONT_HERSHEY_PLAIN, 10, (255, 0, 0), 25)
 
         cTime = time.time()
         fps = 1/(cTime - pTime)
