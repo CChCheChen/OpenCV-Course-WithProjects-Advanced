@@ -91,7 +91,7 @@ while True:
 
         if len(lmList) == 0:
             xp, yp = 0, 0
-            
+
         imgGray = cv.cvtColor(imgCanvas, cv.COLOR_BGR2GRAY)
         _, imgInverse = cv.threshold(imgGray, 50, 255, cv.THRESH_BINARY_INV)
         imgInverse = cv.cvtColor(imgInverse, cv.COLOR_GRAY2RGB)
